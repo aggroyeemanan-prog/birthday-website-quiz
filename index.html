@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The Ultimate Girlfriend Fandom Challenge</title>
+<style>
+:root{--bg:#0f0b18;--card:#1b1527;--tx:#f6f0fb;--mu:#b9aecb;--ac:#ff5c8a;--gold:#ffd36e;--c:#ff5c8a;color-scheme:dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px);height:100%}
+*{box-sizing:border-box}
+body{margin:0;min-height:100%;background:radial-gradient(1000px 500px at 20% -10%,#3b1535 0,transparent 60%),radial-gradient(900px 500px at 100% 10%,#14283a 0,transparent 60%),var(--bg);color:var(--tx);font:16px/1.55 Georgia,"Times New Roman",serif}
+h1,h2,h3,button,.sans{font-family:"Trebuchet MS",system-ui,sans-serif}
+h1{font-size:clamp(2rem,7vw,3.6rem);line-height:1.1;margin:.3em 0}
+h2{margin:.2em 0 .5em}
+#app{max-width:980px;margin:0 auto;padding:20px 16px 60px}
+.c{text-align:center}.hero{padding:9vh 0 4vh}
+.mu{color:var(--mu)}
+button{cursor:pointer;border:0;border-radius:999px;padding:.7em 1.4em;font-size:1rem;font-weight:700;color:#1a0b14;background:var(--ac)}
+button.g{background:transparent;color:var(--tx);border:1px solid #4b3f62}
+button:focus-visible,.opt:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
+.card{background:var(--card);border:1px solid color-mix(in srgb,var(--c) 45%,transparent);border-radius:18px;padding:18px;box-shadow:0 0 28px color-mix(in srgb,var(--c) 18%,transparent)}
+.bar{height:8px;border-radius:9px;background:#2d2540;overflow:hidden;margin:10px 0}.bar i{display:block;height:100%;background:var(--c);transition:width .4s}
+.opt{display:block;width:100%;text-align:left;margin:9px 0;border-radius:14px;background:#251d36;color:var(--tx);border:2px solid #3a2f52;font-weight:500}
+.opt.ok{border-color:#5be38a;background:#173a28}.opt.no{border-color:#ff6b6b;background:#401a22}
+.pill{display:inline-block;padding:.2em .8em;margin:2px;border-radius:99px;border:1px solid var(--c);font-size:.85rem;background:transparent;color:var(--tx);font-weight:600}
+.pill.on{background:var(--c);color:#150b12}
+.badge{padding:10px 12px;border-radius:12px;background:#251d36;margin:6px 0;opacity:.45}.badge.on{opacity:1;border:1px solid var(--gold)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between}
+dialog{background:var(--card);color:var(--tx);border:1px solid var(--ac);border-radius:18px;max-width:560px}
+dialog::backdrop{background:#000a}
+.pre{white-space:pre-wrap}
+.photos{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}.photos img,.ph{width:100%;aspect-ratio:1;object-fit:cover;border-radius:14px;background:#251d36;display:grid;place-items:center;color:var(--mu);text-align:center;font-size:.8rem;padding:8px}
+canvas#cf{position:fixed;inset:0;pointer-events:none;z-index:9}
+#cardimg{max-width:100%;width:320px;border-radius:14px}
+.heart{position:fixed;bottom:-30px;pointer-events:none;animation:up linear infinite;opacity:.5}
+@keyframes up{to{transform:translateY(-110vh)}}
+@media(prefers-reduced-motion:reduce){.heart{display:none}}
+</style></head><body>
+<div id="hearts" aria-hidden="true"></div><canvas id="cf" aria-hidden="true"></canvas>
+<main id="app"></main>
+<dialog id="dlg"></dialog>
+<script>
+/* ============ EDIT THIS BLOCK BEFORE GIFTING ============
+   name: her name | greeting: first line | letter: YOUR personal letter
+   final: message on the last screen | why: why she is special to you
+   secret: hidden message revealed by the final button
+   photos: list of image URLs or paths, e.g. ["photos/us1.jpg","photos/us2.jpg"]
+   accent: main colour | spoilers: true = spoiler questions included by default */
+const CFG={
+ name:"Bhuvi",
+ title:"The Ultimate Girlfriend Fandom Challenge ❤️",
+ sub:"Six worlds. One legendary fan. One very special birthday.",
+ greeting:"Happy Birthday, my Kanmani ",
+ letter:"My Kanmani,\n\nI want you to know that I will never leave you. We are together now, and I want us to keep choosing each other—for forever. I know I may not always express my love in the most romantic way, and I'm sorry if I ever make you feel less loved because of that.\n\nI'm also sorry for the times I ruin your mood or upset you. I never mean to hurt you; that is never my intention. I know I still have things to learn about understanding you, comforting you, and showing you how much you mean to me. I want to keep improving, because your feelings matter to me.\n\nYou deserve love, care, patience, and happiness. Even if I'm sometimes a little less romantic than you want me to be, please never doubt that I love you with all my heart. I'm so lucky to have you in my life, cutie.\n\nI love you, my Kanmani. Ab hum dono ek saath hain—for forever. ❤️",
+ final:"Happy birthday, my Kanmani! ❤️ You make my world brighter just by being in it. I hope your day is as beautiful and special as you are. I love you, cutie. — Manan",
+ why:"You are strong even when life gets difficult, you have a kind heart, and you make ordinary days feel special. I admire how hardworking you are, how much you care, and how being with you feels like having my favourite person and my best friend in one. You are my Kanmani, and there is no one else I'd rather build my forever with. ❤️",
+ secret:"I love you, my Kanmani. Thank you for being you. Ab hum dono ek saath hain—for forever. ❤️ Forever yours, Manan.",
+ photos:[],
+ accent:"#ff5c8a",
+ spoilers:false
+};
+/* Questions: [question, CORRECT, wrong, wrong, wrong, explanation, level(0 easy,1 medium,2 hard), spoiler(1)]
+   Easy quiz = level 0; Medium = 0-1; Hard = 0-2. Add more rows freely. */
+const W=[
+{k:"aot",n:"Attack on Titan",ic:"⚔️",c:"#c0272d",d:"Walls, titans and the Scout Regiment.",q:[
+["Which wall is the innermost one?","Wall Sina","Wall Maria","Wall Rose","Wall Shiganshina","Sina is innermost, Rose is the middle wall and Maria is the outermost.",0],
+["Which friend was taken in by Eren’s family after her parents were killed?","Mikasa Ackerman","Annie Leonhart","Sasha Blouse","Historia Reiss","Mikasa lived with the Yeagers.",0],
+["Which military branch ventures beyond the walls?","Scout Regiment","Garrison","Military Police Brigade","Training Corps","The Scout Regiment explores outside the walls.",0],
+["Who commands the Scout Regiment during the Female Titan mission?","Erwin Smith","Keith Shadis","Dot Pixis","Hange Zoë","Erwin Smith is Commander at that point.",1],
+["Which branch is led by Dot Pixis?","Garrison","Scout Regiment","Military Police Brigade","Cadet Corps","Pixis is the Garrison’s commander.",1],
+["Who is the Armored Titan?","Reiner Braun","Bertholdt Hoover","Zeke Yeager","Marcel Galliard","Reiner holds the Armored Titan.",1,1],
+["Who was NOT part of Levi’s original squad?","Hange Zoë","Petra Ral","Oluo Bozado","Eld Jinn","Hange led a separate squad.",2],
+["Who is the Female Titan?","Annie Leonhart","Mikasa Ackerman","Ymir","Historia Reiss","Annie Leonhart is the Female Titan.",2,1]]},
+{k:"b99",n:"Brooklyn Nine-Nine",ic:"🕵️",c:"#2f6fdf",d:"Cool cool cool. Case files and chaos.",q:[
+["Which detective is Amy Santiago’s husband?","Jake Peralta","Charles Boyle","Teddy Wells","Adrian Pimento","Jake and Amy get married in the show.",0],
+["What is the name of Captain Holt’s corgi?","Cheddar","Biscuit","Toast","Gouda","Cheddar is Holt’s beloved dog.",0],
+["Which two detectives are famously lazy?","Hitchcock and Scully","Boyle and Peralta","Rosa and Terry","Gina and Amy","Hitchcock and Scully avoid work.",0],
+["What is Gina Linetti’s job at the precinct?","Civilian administrator","Detective","Sergeant","Lieutenant","Gina is the civilian administrator.",1],
+["What is the Jake vs. Holt annual contest?","The Halloween Heist","The Pontiac Bandit","The Fall Frenzy","The Cheddar Cup","The Halloween Heist is their yearly rivalry.",1],
+["Terry famously loves which food?","Yogurt","Muffins","Salad","Cheese","“Terry loves yogurt.”",1],
+["In which season does Rosa come out as bisexual?","Season 5","Season 2","Season 3","Season 7","Rosa comes out in season 5.",2],
+["What bar does the squad hang out in?","Shaw’s Bar","McGuffin’s","The Nine-Nine Pub","Charlie’s","Shaw’s Bar is their hangout.",2]]},
+{k:"mir",n:"Miraculous Ladybug",ic:"🐞",c:"#e0243b",d:"Paris, kwamis and a very big secret.",q:[
+["Who is Cat Noir’s civilian identity?","Adrien Agreste","Luka Couffaine","Nino Lahiffe","Félix","Adrien is Cat Noir.",0],
+["What is the name of Marinette’s kwami?","Tikki","Plagg","Wayzz","Nooroo","Tikki is Ladybug’s kwami.",0],
+["What does Plagg love to eat?","Camembert","Brie","Cheddar","Gouda","Plagg adores Camembert.",0],
+["Which Miraculous gives Ladybug her powers?","Earrings","Ring","Brooch","Bracelet","Ladybug’s Miraculous is the earrings.",1],
+["Who is the Guardian of the Miraculouses?","Master Fu","Gabriel Agreste","Tom Dupain","Nino","Master Fu guards the Miracle Box.",1],
+["Who is Hawk Moth?","Gabriel Agreste","Nathalie Sancoeur","Master Fu","Roger Raincomprix","Gabriel Agreste is Hawk Moth.",1,1],
+["Which Miraculous is paired with Wayzz the turtle kwami?","The Bracelet","The Ring","The Comb","The Necklace","Wayzz’s Miraculous is the Turtle bracelet.",2],
+["Which kwami belongs to the Peacock Miraculous?","Duusu","Nooroo","Trixx","Pollen","Duusu is the peacock kwami.",2,1]]},
+{k:"s1",n:"Shrek (2001)",ic:"🧅",c:"#6fae3a",d:"Ogres are like onions. They have layers.",q:[
+["What do ogres have, according to Shrek?","Layers","Rules","Gills","Wings","Shrek compares ogres to onions.",0],
+["Who rules the town of Duloc?","Lord Farquaad","King Harold","Prince Charming","Pinocchio","Farquaad is Duloc’s ruler.",0],
+["Which creature guards Princess Fiona?","A dragon","A troll","A wolf","A giant","A fire-breathing dragon guards the castle.",0],
+["Who is Donkey’s love interest?","Dragon","Fiona","Gingy","The Fairy Godmother","Donkey and Dragon fall for each other.",1],
+["Which princess does Farquaad choose from the Magic Mirror?","Fiona","Snow White","Cinderella","Rapunzel","He picks Fiona.",1],
+["What does Farquaad offer Shrek for rescuing Fiona?","The deed to his swamp","A castle","Gold","A new donkey","He promises to clear the fairytale creatures out.",1],
+["What does Gingy beg Farquaad not to take?","His gumdrop buttons","His legs","His icing","His cane","“Not my gumdrop buttons!”",2],
+["What breaks Fiona’s curse?","True love’s kiss","A potion","A dragon’s tear","Donkey’s song","True love’s kiss reveals her true form.",2,1]]},
+{k:"s2",n:"Shrek 2 (2004)",ic:"👑",c:"#d4a82c",d:"Far Far Away has never been this awkward.",q:[
+["Where do Shrek and Fiona travel to?","Far Far Away","Duloc","The Swamp","Dragon’s Keep","Fiona’s parents live in Far Far Away.",0],
+["Who is the swashbuckling cat hired to take out Shrek?","Puss in Boots","Tom","Garfield","Felix","Puss in Boots joins the team.",0],
+["Who is Fiona’s mother?","Queen Lillian","Doris","Cinderella","Snow White","Lillian is the Queen.",0],
+["Who is the Fairy Godmother’s son?","Prince Charming","Lord Farquaad","King Harold","Pinocchio","Prince Charming is her son.",1],
+["What does the Happily Ever After potion do to Shrek?","Makes him a handsome human","Makes him a frog","Makes him a giant","Makes him invisible","Shrek becomes human, and Donkey a stallion.",1],
+["What was King Harold secretly before becoming human?","A frog","A donkey","An ogre","A dragon","Harold was a frog prince.",1,1],
+["Which song does the Fairy Godmother perform at the ball?","Holding Out for a Hero","Livin’ la Vida Loca","Accidentally in Love","Funkytown","She sings Holding Out for a Hero.",2],
+["What is the giant gingerbread man called?","Mongo","Gingy","Crumbs","Butterbean","Mongo is the giant cookie.",2]]} ,
+ {k:"lk",n:"The Lion King (Animated)",ic:"🦁",c:"#d98b28",d:"The animated Pride Lands, the Circle of Life and a legendary king.",q:[
+ ["Who is Simba’s father?","Mufasa","Scar","Rafiki","Zazu","Mufasa is Simba’s father and the king of the Pride Lands.",0],
+ ["What is the name of Simba’s mother?","Sarabi","Nala","Shenzi","Sarafina","Sarabi is Simba’s mother.",0],
+ ["Who is Simba’s uncle and main antagonist in the original animated film?","Scar","Zazu","Timon","Banzai","Scar plots to take the throne from Mufasa and Simba.",0],
+ ["Which two friends help Simba after he leaves the Pride Lands?","Timon and Pumbaa","Rafiki and Zazu","Ed and Banzai","Shenzi and Sarabi","Timon the meerkat and Pumbaa the warthog befriend Simba.",0],
+ ["What phrase do Timon and Pumbaa teach Simba?","Hakuna Matata","Circle of Life","Remember Who You Are","Be Prepared","Hakuna Matata means no worries.",1],
+ ["Which animal is Rafiki?","Mandrill","Hornbill","Meerkat","Warthog","Rafiki is commonly identified as a mandrill in the animated film.",1],
+ ["What is the name of Simba’s childhood friend who later becomes his mate?","Nala","Sarabi","Kiara","Zira","Nala reunites with Simba and later becomes his mate.",1],
+ ["Which song is associated with Scar’s plan to take the throne?","Be Prepared","Can You Feel the Love Tonight","I Just Can’t Wait to Be King","Hakuna Matata","Scar performs Be Prepared while rallying the hyenas.",2],
+ ["Who teaches Simba to remember who he is?","Mufasa’s spirit","Zazu","Pumbaa","Shenzi","Mufasa appears to Simba and urges him to remember who he is.",2],
+ ["Which animal is Zazu?","Red-billed hornbill","Mandrill","Meerkat","Crocodile","Zazu is a hornbill who serves the royal family.",2]]
+ }];
+const AC={aot:["Humanity’s Last Trivia Hope","Score 70%+ in Attack on Titan"],b99:["The 99th Precinct Genius","Score 70%+ in Brooklyn Nine-Nine"],mir:["Miraculous Mastermind","Score 70%+ in Miraculous"],s1:["Certified Ogre Expert","Score 70%+ in Shrek"],s2:["Royal Far Far Away Scholar","Score 70%+ in Shrek 2"],lk:["King of the Pride Lands","Score 70%+ in the animated Lion King"],gm:["Guardian of the Miraculouses","Finish the Miraculous quiz"],sw:["Swamp Royalty","Finish the Shrek quiz"],perf:["Title of Your Sex Tape","Get a perfect score"],streak:["Captain of the Quiz Corps","5 correct answers in a row"],all:["Ultimate Fandom Girlfriend","Finish all six worlds"]};
+const RK=[[0,"Rookie Fan"],[100,"Rising Fan"],[200,"Fandom Fanatic"],[300,"Legendary Fan"],[400,"Ultimate Fandom Girlfriend"]];
+const LV=["Easy","Medium","Hard"];
+document.documentElement.style.setProperty("--ac",CFG.accent);
+const $=s=>document.querySelector(s),app=$("#app");
+const esc=s=>String(s).replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]));
+const fresh=()=>({xp:0,c:0,t:0,done:{},best:{},got:{},ach:{}});
+function load(){try{return Object.assign(fresh(),JSON.parse(localStorage.getItem("fandomGift")))}catch(e){return fresh()}}
+function save(){try{localStorage.setItem("fandomGift",JSON.stringify(S))}catch(e){}}
+let S=load(),Z={sp:CFG.spoilers,lv:[0,0,0,0,0]},Q=null,scr="land";
+const shuf=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a};
+const rank=()=>RK.filter(r=>S.xp>=r[0]).pop()[1];
+const acc=()=>S.t?Math.round(100*S.c/S.t):0;
+const nd=()=>W.filter(w=>S.done[w.k]).length;
+function give(k){if(!S.ach[k]){S.ach[k]=1;return k}}
+function start(w){
+ const pool=W[w].q.map((q,i)=>({q,id:w+"-"+i})).filter(o=>o.q[6]<=Z.lv[w]&&(Z.sp||!o.q[7]));
+ if(!pool.length){scr="dash";render();return}
+ Q={w,i:0,score:0,streak:0,max:0,sel:null,new:[],list:shuf(pool).map(o=>({t:o.q[0],x:o.q[5],id:o.id,o:shuf([[o.q[1],1],o.q[2],o.q[3],o.q[4]].map(a=>Array.isArray(a)?{t:a[0],r:1}:{t:a,r:0}))}))};
+ scr="quiz";render()}
+function pick(i){
+ if(Q.sel!==null)return;const cur=Q.list[Q.i];Q.sel=i;S.t++;
+ if(cur.o[i].r){S.c++;Q.score++;Q.streak++;Q.max=Math.max(Q.max,Q.streak);
+  if(!S.got[cur.id]){S.got[cur.id]=1;S.xp+=10+(Q.streak>=3?5:0)}}else Q.streak=0;
+ save();render()}
+function next(){
+ Q.sel=null;Q.i++;
+ if(Q.i<Q.list.length){render();return}
+ const w=W[Q.w],pct=Math.round(100*Q.score/Q.list.length);
+ S.done[w.k]=1;S.best[w.k]=Math.max(S.best[w.k]||0,pct);
+ const n=[];
+ if(pct>=70)n.push(give(w.k));
+ if(w.k=="mir")n.push(give("gm"));if(w.k=="s1")n.push(give("sw"));
+ if(pct==100)n.push(give("perf"));if(Q.max>=5)n.push(give("streak"));
+ if(nd()==6)n.push(give("all"));
+ Q.pct=pct;Q.new=n.filter(Boolean);save();scr="res";render()}
+function msg(p){return p==100?"Flawless. Absolutely legendary.":p>=70?"You really know your stuff!":p>=40?"Solid effort, and the fun is the point.":"Every fan starts somewhere. Rematch?"}
+function head(){return `<div class="row sans"><button class="g" data-a="dash">Dashboard</button><span>${S.xp} XP · ${esc(rank())}</span></div>`}
+function render(){
+ window.scrollTo(0,0);
+ if(scr=="land")app.innerHTML=`<section class="c hero"><p class="mu sans">${esc(CFG.greeting)}${esc(CFG.name)} 🎂</p><h1>${esc(CFG.title)}</h1><p class="mu">${esc(CFG.sub)}</p><p><button data-a="dash">Start your adventure</button></p><p><button class="g" data-a="letter">Read my birthday letter</button></p></section>`;
+ if(scr=="dash"){
+  const sp=`<button class="pill ${Z.sp?"on":""}" data-a="sp" aria-pressed="${Z.sp}">${Z.sp?"Spoilers allowed":"No major spoilers"}</button>`;
+  app.innerHTML=`${head()}<h2>Choose a world</h2><p class="mu sans">Overall progress: ${nd()} of 6 worlds finished · Accuracy ${acc()}% ${sp}</p><div class="bar" style="--c:var(--ac)"><i style="width:${nd()/6*100}%"></i></div>
+  <div class="grid">${W.map((w,i)=>`<div class="card" style="--c:${w.c}"><h3>${w.ic} ${w.n}</h3><p class="mu">${w.d}</p><div>${LV.map((l,j)=>`<button class="pill ${Z.lv[i]==j?"on":""}" data-a="lv" data-w="${i}" data-l="${j}">${l}</button>`).join("")}</div><div class="bar"><i style="width:${S.best[w.k]||0}%"></i></div><p class="sans mu">${S.done[w.k]?"Best: "+S.best[w.k]+"%":"Not started yet"}</p><button data-a="go" data-w="${i}" style="background:${w.c}">${S.done[w.k]?"Play again":"Play"}</button></div>`).join("")}</div>
+  <h2>Achievements</h2>${Object.keys(AC).map(k=>`<div class="badge sans ${S.ach[k]?"on":""}">${S.ach[k]?"🏆":"🔒"} <b>${AC[k][0]}</b> <span class="mu">${AC[k][1]}</span></div>`).join("")}
+  <p>${nd()==5?`<button data-a="fin">Open your birthday surprise ❤️</button>`:`<span class="mu sans">Finish all six worlds to unlock a secret birthday surprise.</span>`}</p>
+  <p><button class="g" data-a="reset">Reset progress</button></p>`}
+ if(scr=="quiz"){
+  const w=W[Q.w],c=Q.list[Q.i],n=Q.list.length;
+  app.innerHTML=`<div style="--c:${w.c}">${head()}<h2>${w.ic} ${w.n}</h2><div class="row sans"><span>Question ${Q.i+1} of ${n}</span><span>Score ${Q.score} · Streak ${Q.streak}</span></div><div class="bar"><i style="width:${Q.i/n*100}%"></i></div>
+  <div class="card"><h3 id="q">${esc(c.t)}</h3><div role="group" aria-labelledby="q">${c.o.map((o,i)=>`<button class="opt ${Q.sel!==null?(o.r?"ok":i==Q.sel?"no":""):""}" data-a="pick" data-i="${i}" ${Q.sel!==null?"disabled":""}>${i+1}. ${esc(o.t)}</button>`).join("")}</div>
+  ${Q.sel!==null?`<p role="status"><b>${c.o[Q.sel].r?"Correct! ✨":"Not quite."}</b> ${esc(c.x)}</p><button data-a="next">${Q.i+1<n?"Next question":"See results"}</button>`:""}</div></div>`}
+ if(scr=="res"){
+  const w=W[Q.w];
+  app.innerHTML=`<div class="c hero" style="--c:${w.c}"><h2>${w.ic} ${w.n} complete</h2><h1>${Q.score} / ${Q.list.length}</h1><p>${msg(Q.pct)}</p>${Q.new.map(k=>`<div class="badge on sans">🏆 New: <b>${AC[k][0]}</b></div>`).join("")}<p><button data-a="go" data-w="${Q.w}">Restart</button> <button class="g" data-a="dash">Dashboard</button></p>${nd()==5?`<p><button data-a="fin">Open your birthday surprise ❤️</button></p>`:""}</div>`}
+ if(scr=="fin"){
+  let st=W.reduce((a,w)=>(S.best[w.k]||0)>(S.best[a.k]||0)?w:a,W[0]);
+  app.innerHTML=`<div class="c hero"><h1>Happy Birthday, ${esc(CFG.name)} 🎉</h1><p class="mu">You finished all six worlds.</p></div>
+  <div class="card c sans"><p>Total XP <b>${S.xp}</b> · Accuracy <b>${acc()}%</b></p><p>Strongest fandom: <b>${st.ic} ${st.n}</b></p><p>Final rank: <b>${esc(rank())}</b></p><p>Achievements: ${Object.keys(S.ach).map(k=>esc(AC[k][0])).join(", ")}</p></div>
+  <h2>My message to you</h2><p class="pre">${esc(CFG.final)}</p><h2>Why you’re special to me</h2><p class="pre">${esc(CFG.why)}</p>
+  <div class="photos">${CFG.photos.length?CFG.photos.map(p=>`<img src="${esc(p)}" alt="Our photo" loading="lazy">`).join(""):`<div class="ph">Add your photos in CFG.photos</div>`}</div>
+  <p class="c"><button data-a="secret">One Last Surprise ❤️</button></p><div id="sec" class="card c pre" hidden role="status"></div>
+  <h2>Your results card</h2><p class="mu sans">Press and hold (phone) or right-click (computer) the card to save it.</p><img id="cardimg" alt="Your results card" src="${card(st)}">
+  <p><button class="g" data-a="dash">Back to dashboard</button></p>`;
+  boom()}
+}
+function card(st){
+ const c=document.createElement("canvas");c.width=600;c.height=800;const x=c.getContext("2d");
+ const g=x.createLinearGradient(0,0,600,800);g.addColorStop(0,"#3b1535");g.addColorStop(1,"#14283a");x.fillStyle=g;x.fillRect(0,0,600,800);
+ x.strokeStyle="#ffd36e";x.lineWidth=4;x.strokeRect(20,20,560,760);x.textAlign="center";x.fillStyle="#fff";
+ x.font="bold 34px Georgia";x.fillText("Happy Birthday",300,110);x.font="bold 52px Georgia";x.fillText(CFG.name,300,180);
+ x.font="26px Georgia";x.fillStyle="#ffd36e";x.fillText(rank(),300,270);
+ x.fillStyle="#fff";x.font="30px Georgia";x.fillText(S.xp+" XP",300,360);x.fillText("Accuracy "+acc()+"%",300,420);x.fillText("Strongest: "+st.n,300,480);
+ x.font="24px Georgia";x.fillText(Object.keys(S.ach).length+" achievements unlocked",300,560);x.font="48px Georgia";x.fillText("❤️",300,700);
+ return c.toDataURL("image/png")}
+function boom(){
+ const c=$("#cf"),x=c.getContext("2d");c.width=innerWidth;c.height=innerHeight;
+ const p=Array.from({length:140},()=>({x:Math.random()*c.width,y:-Math.random()*c.height,v:2+Math.random()*3,s:5+Math.random()*6,h:Math.random()*360}));
+ let t=0;(function f(){x.clearRect(0,0,c.width,c.height);p.forEach(o=>{o.y+=o.v;x.fillStyle=`hsl(${o.h},90%,60%)`;x.fillRect(o.x,o.y,o.s,o.s)});if(++t<360)requestAnimationFrame(f);else x.clearRect(0,0,c.width,c.height)})()}
+function letter(){const d=$("#dlg");d.innerHTML=`<h2>For ${esc(CFG.name)} ❤️</h2><p class="pre">${esc(CFG.letter)}</p><button data-a="close">Close</button>`;d.showModal()}
+app.addEventListener("click",e=>{
+ const b=e.target.closest("[data-a]");if(!b)return;const a=b.dataset.a;
+ if(a=="dash"){scr="dash";render()}
+ else if(a=="sp"){Z.sp=!Z.sp;render()}
+ else if(a=="lv"){Z.lv[+b.dataset.w]=+b.dataset.l;render()}
+ else if(a=="go")start(+b.dataset.w);
+ else if(a=="pick")pick(+b.dataset.i);
+ else if(a=="next")next();
+ else if(a=="fin"){scr="fin";render()}
+ else if(a=="letter")letter();
+ else if(a=="secret"){const s=$("#sec");s.hidden=false;s.textContent=CFG.secret;boom();b.hidden=true}
+ else if(a=="reset"&&confirm("Erase all progress?")){S=fresh();save();render()}});
+$("#dlg").addEventListener("click",e=>{if(e.target.dataset.a=="close"||e.target.id=="dlg")$("#dlg").close()});
+document.addEventListener("keydown",e=>{if(scr=="quiz"&&Q&&Q.sel===null&&"1234".includes(e.key)&&e.key)pick(+e.key-1)});
+for(let i=0;i<12;i++){const h=document.createElement("span");h.className="heart";h.textContent="❤";h.style.cssText=`left:${i*8.5}%;animation-duration:${12+i%5*3}s;animation-delay:${-i*2}s;font-size:${14+i%4*6}px;color:var(--ac)`;$("#hearts").appendChild(h)}
+render();
+</script></body></html>
